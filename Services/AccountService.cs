@@ -313,7 +313,7 @@ public class AccountService : IAccountService
     private string generateResetToken()
     {
         // token is a cryptographically strong random sequence of values
-        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
 
         // ensure token is unique by checking against db
         var tokenIsUnique = !_context.Accounts.Any(x => x.ResetToken == token);
@@ -326,7 +326,7 @@ public class AccountService : IAccountService
     private string generateVerificationToken()
     {
         // token is a cryptographically strong random sequence of values
-        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
 
         // ensure token is unique by checking against db
         var tokenIsUnique = !_context.Accounts.Any(x => x.VerificationToken == token);
@@ -376,12 +376,16 @@ public class AccountService : IAccountService
         string message;
         if (!string.IsNullOrEmpty(origin))
         {
+            // origin exists if request sent from browser single page app (e.g. Angular or React)
+            // so send link to verify via single page app
             var verifyUrl = $"{origin}/account/verify-email?token={account.VerificationToken}";
             message = $@"<p>Please click the below link to verify your email address:</p>
                             <p><a href=""{verifyUrl}"">{verifyUrl}</a></p>";
         }
         else
         {
+            // origin missing if request sent directly to api (e.g. from Postman)
+            // so send instructions to verify directly with api
             message = $@"<p>Please use the below token to verify your email address with the <code>/accounts/verify-email</code> api route:</p>
                             <p><code>{account.VerificationToken}</code></p>";
         }

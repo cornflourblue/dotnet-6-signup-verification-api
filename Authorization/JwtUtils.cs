@@ -81,7 +81,7 @@ public class JwtUtils : IJwtUtils
         var refreshToken = new RefreshToken
         {
             // token is a cryptographically strong random sequence of values
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            Token = Convert.ToHexString(RandomNumberGenerator.GetBytes(64)),
             // token is valid for 7 days
             Expires = DateTime.UtcNow.AddDays(7),
             Created = DateTime.UtcNow,
