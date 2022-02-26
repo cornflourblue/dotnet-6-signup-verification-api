@@ -25,7 +25,7 @@ public class ErrorHandlerMiddleware
             var response = context.Response;
             response.ContentType = "application/json";
 
-            switch(error)
+            switch (error)
             {
                 case AppException e:
                     // custom application error
