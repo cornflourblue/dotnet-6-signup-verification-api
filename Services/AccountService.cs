@@ -98,7 +98,6 @@ public class AccountService : IAccountService
         var newRefreshToken = rotateRefreshToken(refreshToken, ipAddress);
         account.RefreshTokens.Add(newRefreshToken);
 
-
         // remove old refresh tokens from account
         removeOldRefreshTokens(account);
 
