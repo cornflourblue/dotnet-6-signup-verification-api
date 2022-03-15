@@ -12,7 +12,7 @@ using WebApi.Helpers;
 public interface IJwtUtils
 {
     public string GenerateJwtToken(Account account);
-    public int? ValidateJwtToken(string token);
+    public JwtSecurityToken? ValidateJwtToken(string token);
     public RefreshToken GenerateRefreshToken(string ipAddress);
 }
 
@@ -36,7 +36,11 @@ public class JwtUtils : IJwtUtils
         var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[] { new Claim("id", account.Id.ToString()) }),
+            Subject = new ClaimsIdentity(new[] { 
+                new Claim("id", account.Id.ToString()),
+                new Claim(ClaimTypes.Name, account.Email),
+                new Claim(ClaimTypes.Role, account.Role.ToString())
+            }),
             Expires = DateTime.UtcNow.AddMinutes(15),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
@@ -44,7 +48,7 @@ public class JwtUtils : IJwtUtils
         return tokenHandler.WriteToken(token);
     }
 
-    public int? ValidateJwtToken(string token)
+    public JwtSecurityToken? ValidateJwtToken(string token)
     {
         if (token == null)
             return null;
@@ -64,10 +68,9 @@ public class JwtUtils : IJwtUtils
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
-            // return account id from JWT token if validation successful
-            return accountId;
+            // JWT token if validation successful
+            return jwtToken;
         }
         catch
         {
