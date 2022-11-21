@@ -63,7 +63,7 @@ public class AccountsController : BaseController
     }
 
     [AllowAnonymous]
-    [HttpPost("verify-email")]
+    [HttpGet("verify-email")]
     public IActionResult VerifyEmail(VerifyEmailRequest model)
     {
         _accountService.VerifyEmail(model.Token);
